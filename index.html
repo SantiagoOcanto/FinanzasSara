@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Control de Gastos Sarita</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --soft-pink: #fff0f5;
+        --main-pink: #fce4ec;
+        --accent-pink: #f06292;
+        --dark-pink: #c2185b;
+        --text: #4a152b;
+        --light-gray: #f9f9f9;
+        --success-color: #2ecc71;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: linear-gradient(135deg, var(--soft-pink) 0%, #ffffff 100%);
+        color: var(--text);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        padding: 20px 15px 100px;
+        min-height: 100vh;
+      }
+
+      .container-content {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .header {
+        margin-bottom: 25px;
+        text-align: center;
+      }
+      .header h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--accent-pink);
+        letter-spacing: -1px;
+      }
+
+      .card-custom {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(240, 98, 146, 0.08);
+        margin-bottom: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(10px);
+      }
+
+      .tab-nav {
+        display: flex;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .tab-nav button {
+        flex: 1;
+        border: none;
+        background: none;
+        padding: 15px 10px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #aaa;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+      }
+
+      .tab-nav button.active {
+        color: white;
+        background: var(--accent-pink);
+      }
+
+      .form-control,
+      .form-select {
+        border-radius: 12px;
+        border: 2px solid var(--main-pink);
+        margin-bottom: 15px;
+        padding: 12px;
+        background-color: #fafafa;
+      }
+
+      .label-form {
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        display: block;
+      }
+
+      .btn-pink {
+        background: linear-gradient(
+          135deg,
+          var(--accent-pink) 0%,
+          var(--dark-pink) 100%
+        );
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 15px;
+        font-weight: 700;
+        width: 100%;
+        text-transform: uppercase;
+        box-shadow: 0 6px 15px rgba(240, 98, 146, 0.3);
+      }
+
+      /* --- ESTILOS DEL MODAL MEJORADOS --- */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .modal-overlay.activo {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal-content-custom {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        transform: translateY(-30px) scale(0.9);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .modal-overlay.activo .modal-content-custom {
+        transform: translateY(0) scale(1);
+      }
+
+      .opciones-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 20px 0;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--light-gray);
+        padding: 12px;
+        border-radius: 12px;
+        cursor: pointer;
+        border: 1px solid var(--main-pink);
+      }
+
+      .modal-footer-custom {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .btn-confirm {
+        background: var(--accent-pink);
+        color: white;
+        border: none;
+        flex: 1;
+        padding: 12px;
+        border-radius: 12px;
+        font-weight: bold;
+      }
+      .btn-cancel {
+        background: #eee;
+        color: #666;
+        border: none;
+        flex: 1;
+        padding: 12px;
+        border-radius: 12px;
+      }
+
+      /* Toast & Others */
+      .toast-notification {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: white;
+        padding: 16px 25px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        z-index: 9999;
+        opacity: 0;
+        transition: all 0.4s ease;
+      }
+      .toast-notification.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+
+      /* Alineación Prolija del Historial */
+      .mov-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center; /* Alinea verticalmente al centro */
+        padding: 15px;
+        border-bottom: 1px solid var(--main-pink);
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 8px;
+      }
+
+      .mov-info {
+        flex: 1; /* Toma todo el espacio disponible a la izquierda */
+        padding-right: 10px;
+      }
+
+      .mov-monto-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px; /* Espacio entre el monto y el tachito */
+        white-space: nowrap; /* Evita que el monto se rompa en dos líneas */
+      }
+
+      /* Estilo del Tachito */
+      .delete-btn {
+        color: #ddd;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+      }
+
+      .delete-btn:hover {
+        color: #ff5252;
+        transform: scale(1.2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-content">
+      <div class="header">
+        <h1>Gastos</h1>
+      </div>
+
+      <div class="tab-nav">
+        <button id="t1" class="active" onclick="verTab(1)">
+          <i class="fas fa-plus"></i> Nuevo
+        </button>
+        <button id="t2" onclick="verTab(2)">
+          <i class="fas fa-list"></i> Historial
+        </button>
+        <button id="t3" onclick="verTab(3)">
+          <i class="fas fa-chart-bar"></i> Reportes
+        </button>
+      </div>
+
+      <div id="cont1" class="card-custom">
+        <h3
+          style="
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--accent-pink);
+            margin-bottom: 20px;
+          "
+        >
+          <i class="fas fa-edit"></i> Registrar Movimiento
+        </h3>
+        <form id="formPrincipal" onsubmit="guardarMovimiento(event)">
+          <label class="label-form">Fecha</label>
+          <input
+            type="date"
+            name="fecha"
+            id="fechaInput"
+            class="form-control"
+            required
+          />
+
+          <label class="label-form">Concepto</label>
+          <input
+            type="text"
+            name="concepto"
+            id="conceptoInput"
+            class="form-control"
+            placeholder="Ej: Supermercado..."
+            required
+          />
+
+          <div class="row g-2">
+            <div class="col-6">
+              <label class="label-form">Monto</label>
+              <input
+                type="text"
+                class="form-control montoMask"
+                name="monto"
+                id="montoInput"
+                placeholder="0,00"
+                required
+              />
+            </div>
+            <div class="col-6">
+              <label class="label-form">Tipo</label>
+              <select name="tipo" id="tipoInput" class="form-select" required>
+                <option value="Egreso">Gasto (-)</option>
+                <option value="Ingreso">Ingreso (+)</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="label-form">Sección</label>
+          <select
+            name="seccion"
+            id="selectSeccion"
+            class="form-select"
+            required
+            onchange="actualizarCategorias()"
+          >
+            <option value="Personal">Personal</option>
+            <option value="Trabajo">Trabajo</option>
+            <option value="Casa">Casa</option>
+          </select>
+
+          <div class="row g-2">
+            <div class="col-12">
+              <label class="label-form">Categoría</label>
+              <select
+                name="categoria"
+                id="selectCategoria"
+                class="form-select"
+                required
+                onchange="checkMercaderia(this.value)"
+              >
+                <option value="">Seleccionar...</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="label-form">Método</label>
+          <select name="metodo" id="metodoInput" class="form-select" required>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Digital">Digital</option>
+            <option value="Tarjeta">Tarjeta</option>
+          </select>
+
+          <button type="submit" id="btnGuardar" class="btn-pink mt-3">
+            <i class="fas fa-save"></i> Guardar Movimiento
+          </button>
+        </form>
+      </div>
+
+      <div id="cont2" style="display: none">
+        <div class="card-custom">
+          <h3
+            style="
+              font-weight: 800;
+              color: var(--accent-pink);
+              margin-bottom: 20px;
+            "
+          >
+            <i class="fas fa-history"></i> Historial
+          </h3>
+          <div
+            id="listaHistorial"
+            style="max-height: 550px; overflow-y: auto"
+          ></div>
+        </div>
+      </div>
+
+      <div id="cont3" style="display: none">
+        <div class="card-custom">
+          <label class="label-form">Mes</label>
+          <select
+            id="selectMes"
+            class="form-select"
+            onchange="generarReporte()"
+          ></select>
+          <div id="reporteContenido"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modalMercaderia" class="modal-overlay">
+      <div class="modal-content-custom">
+        <div style="text-align: center; color: var(--accent-pink)">
+          <i class="fas fa-tag fa-2x mb-2"></i>
+          <h3 style="font-weight: 800">Detalle Mercadería</h3>
+        </div>
+        <div class="opciones-grid">
+          <label class="checkbox-item"
+            ><input type="checkbox" value="Remeras" /> Remeras</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" value="Posters" /> Posters</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" value="Gorras" /> Gorras</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" value="Estampas" /> Estampas</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" value="Bordados" /> Bordados</label
+          >
+          <label class="checkbox-item"
+            ><input type="checkbox" value="Envíos" /> Envíos</label
+          >
+        </div>
+        <div class="modal-footer-custom">
+          <button type="button" class="btn-cancel" onclick="cerrarModal()">
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn-confirm"
+            onclick="cargarMercaderia()"
+          >
+            Cargar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast-notification">
+      <i id="toastIcon" class="fas fa-check-circle"></i>
+      <span id="toastMsg"></span>
+    </div>
+
+    <script>
+      // ==================== CONFIGURACIÓN ====================
+      const scriptURL =
+        "https://script.google.com/macros/s/AKfycbwumB9JvAsiiLpEvTNzgdQNMBAmWLNOcEs00w_rdjaF2f-zhPhhh7zZF8LEf3B2qEcrdA/exec";
+
+      const CATEGORIAS = {
+        Personal: ["Transporte", "Entretenimiento", "Salud", "Otros"],
+        Trabajo: [
+          "Viajes",
+          "Viáticos",
+          "Insumos",
+          "Mercaderia",
+          "Envios",
+          "Otros",
+        ],
+        Casa: ["Supermercado", "Gas", "Servicios", "Arreglos", "Otros"],
+      };
+
+      let db = { movimientos: [] };
+      let filtroSeccionActual = "TODO";
+      const fmt = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 2 });
+
+      // ==================== INICIALIZACIÓN ====================
+      window.addEventListener("load", () => {
+        setFechaHoy();
+        actualizarCategorias();
+        llenarMeses();
+        cargarDatos(); // Trae los datos de Google Sheets
+      });
+
+      function setFechaHoy() {
+        document.getElementById("fechaInput").value = new Date()
+          .toISOString()
+          .split("T")[0];
+      }
+
+      function actualizarCategorias() {
+        const seccion = document.getElementById("selectSeccion").value;
+        const select = document.getElementById("selectCategoria");
+        select.innerHTML =
+          '<option value="">Seleccionar...</option>' +
+          CATEGORIAS[seccion]
+            .map((c) => `<option value="${c}">${c}</option>`)
+            .join("");
+      }
+
+      // ==================== CARGA Y RENDER (HISTORIAL) ====================
+      async function cargarDatos() {
+        try {
+          const r = await fetch(`${scriptURL}?t=${Date.now()}`);
+          db = await r.json();
+          renderHistorial();
+          if (document.getElementById("cont3").style.display === "block")
+            generarReporte();
+        } catch (e) {
+          console.error("Error al cargar:", e);
+          mostrarNotificacion(
+            "Error al conectar con la base de datos",
+            "error",
+          );
+        }
+      }
+
+      function renderHistorial() {
+        const contenedor = document.getElementById("listaHistorial");
+        if (!db.movimientos || db.movimientos.length === 0) {
+          contenedor.innerHTML = `<div class="text-center p-5 opacity-50"><i class="fas fa-folder-open fa-3x"></i><p>Sin datos</p></div>`;
+          return;
+        }
+
+        // Ordenar por fecha (más reciente primero)
+        const ordenados = [...db.movimientos].sort(
+          (a, b) => new Date(b.fecha) - new Date(a.fecha),
+        );
+
+        contenedor.innerHTML = ordenados
+          .map((m) => {
+            const esIngreso = m.tipo === "Ingreso";
+            const montoNum = parseFloat(m.monto);
+
+            // Escapamos el concepto por si tiene comillas
+            const conceptoEscapado = m.concepto.replace(/'/g, "\\'");
+
+            return `
+            <div class="mov-item">
+                <div class="mov-info">
+                    <div class="mov-concepto" style="font-weight:700; font-size:0.95rem;">${m.concepto}</div>
+                    <div class="mov-detalles" style="font-size:0.75rem; color:#888;">
+                        ${m.fecha} • <span style="color:var(--accent-pink)">${m.seccion}</span>
+                    </div>
+                </div>
+                <div class="mov-monto-actions">
+                    <span class="${esIngreso ? "monto-entrada" : "monto-salida"}" style="font-weight:800; font-size:1.05rem;">
+                        ${esIngreso ? "+" : "-"}$${fmt.format(montoNum)}
+                    </span>
+                    <i class="fas fa-trash-alt delete-btn" 
+                       onclick="eliminarMovimiento('${m.fecha}', '${conceptoEscapado}', '${m.seccion}')">
+                    </i>
+                </div>
+            </div>`;
+          })
+          .join("");
+      }
+
+      // ==================== REPORTES Y ANÁLISIS ====================
+      function generarReporte() {
+        const mes = parseInt(document.getElementById("selectMes").value);
+        const movsMes = db.movimientos.filter(
+          (m) => new Date(m.fecha + "T12:00:00").getMonth() === mes,
+        );
+
+        let ing = 0,
+          gas = 0;
+        const porSec = {};
+
+        movsMes.forEach((m) => {
+          const monto = parseFloat(m.monto);
+          if (m.tipo === "Ingreso") ing += monto;
+          else gas += monto;
+          if (!porSec[m.seccion])
+            porSec[m.seccion] = { ing: 0, gas: 0, items: [] };
+          porSec[m.seccion][m.tipo === "Ingreso" ? "ing" : "gas"] += monto;
+          porSec[m.seccion].items.push(m);
+        });
+
+        // Actualizar cajas de texto
+        const statsRow = document.getElementById("statsRow");
+        if (statsRow) statsRow.style.display = "grid";
+
+        document.getElementById("totalIngresos").innerText =
+          "$" + fmt.format(ing);
+        document.getElementById("totalGastos").innerText =
+          "$" + fmt.format(gas);
+        document.getElementById("totalBalance").innerText =
+          "$" + fmt.format(ing - gas);
+
+        // Renderizado de lista por sección
+        let html = "";
+        for (const [sec, data] of Object.entries(porSec)) {
+          html += `
+            <div class="mb-4 border-start border-4 border-info ps-3">
+                <div class="fw-bold text-uppercase small">${sec}</div>
+                <div class="text-muted small mb-2">Ingresos: $${fmt.format(data.ing)} | Gastos: $${fmt.format(data.gas)}</div>
+                ${data.items
+                  .map(
+                    (i) => `
+                    <div class="d-flex justify-content-between small border-bottom py-1">
+                        <span>${i.concepto}</span>
+                        <span class="${i.tipo === "Ingreso" ? "text-success" : "text-danger"}">$${fmt.format(parseFloat(i.monto))}</span>
+                    </div>
+                `,
+                  )
+                  .join("")}
+            </div>`;
+        }
+        document.getElementById("reporteContenido").innerHTML =
+          html || "<p class='text-center opacity-50'>No hay datos este mes</p>";
+      }
+
+      // ==================== LÓGICA DEL MODAL ====================
+      function checkMercaderia(val) {
+        if (val === "Mercaderia") {
+          document.getElementById("modalMercaderia").classList.add("activo");
+        }
+      }
+
+      function cerrarModal() {
+        document.getElementById("modalMercaderia").classList.remove("activo");
+        document.getElementById("selectCategoria").value = "";
+      }
+
+      function cargarMercaderia() {
+        const selected = Array.from(
+          document.querySelectorAll("#modalMercaderia input:checked"),
+        ).map((cb) => cb.value);
+        if (selected.length > 0) {
+          document.getElementById("conceptoInput").value =
+            "Mercadería: " + selected.join(", ");
+        }
+        document.getElementById("modalMercaderia").classList.remove("activo");
+        document
+          .querySelectorAll("#modalMercaderia input")
+          .forEach((cb) => (cb.checked = false));
+      }
+
+      // ==================== NAVEGACIÓN Y GUARDADO ====================
+      function verTab(n) {
+        [1, 2, 3].forEach((i) => {
+          document.getElementById("cont" + i).style.display =
+            i === n ? "block" : "none";
+          document.getElementById("t" + i).classList.toggle("active", i === n);
+        });
+        if (n === 2) renderHistorial();
+        if (n === 3) generarReporte();
+      }
+
+      async function guardarMovimiento(e) {
+        e.preventDefault();
+        const btn = document.getElementById("btnGuardar");
+        btn.disabled = true;
+        btn.innerHTML = "Guardando...";
+
+        const fd = new FormData(e.target);
+        fd.append("action", "agregar_movimiento");
+
+        try {
+          const resp = await fetch(scriptURL, { method: "POST", body: fd });
+          const res = await resp.json();
+          if (res.success) {
+            e.target.reset();
+            setFechaHoy();
+            actualizarCategorias();
+            await cargarDatos();
+            mostrarNotificacion("¡Movimiento guardado!");
+            verTab(2);
+          }
+        } catch (err) {
+          mostrarNotificacion("Error al guardar", "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-save"></i> Guardar Movimiento';
+        }
+      }
+
+      function llenarMeses() {
+        const meses = [
+          "Enero",
+          "Febrero",
+          "Marzo",
+          "Abril",
+          "Mayo",
+          "Junio",
+          "Julio",
+          "Agosto",
+          "Septiembre",
+          "Octubre",
+          "Noviembre",
+          "Diciembre",
+        ];
+        const select = document.getElementById("selectMes");
+        const mesActual = new Date().getMonth();
+        select.innerHTML = meses
+          .map(
+            (m, i) =>
+              `<option value="${i}" ${i === mesActual ? "selected" : ""}>${m}</option>`,
+          )
+          .join("");
+      }
+
+      function mostrarNotificacion(msg, tipo = "success") {
+        const toast = document.getElementById("toast");
+        document.getElementById("toastMsg").innerText = msg;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 3000);
+      }
+
+      // Máscara de moneda
+      document.addEventListener("input", (e) => {
+        if (e.target.classList.contains("montoMask")) {
+          let v = e.target.value.replace(/\D/g, "");
+          if (!v) return;
+          v = (v / 100).toFixed(2).replace(".", ",");
+          e.target.value = v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+      });
+    </script>
+  </body>
+</html>
