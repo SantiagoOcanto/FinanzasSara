@@ -15,6 +15,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" href="favicon.png">
     <style>
       :root {
         --soft-pink: #fff0f5;
@@ -126,7 +128,7 @@
         box-shadow: 0 6px 15px rgba(240, 98, 146, 0.3);
       }
 
-      /* --- ESTILOS DEL MODAL MEJORADOS --- */
+      /* MODAL */
       .modal-overlay {
         position: fixed;
         top: 0;
@@ -205,7 +207,43 @@
         border-radius: 12px;
       }
 
-      /* Toast & Others */
+      /* HISTORIAL ALINEACIÓN */
+      .mov-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid var(--main-pink);
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 8px;
+      }
+
+      .mov-info {
+        flex: 1;
+        padding-right: 10px;
+      }
+
+      .mov-monto-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        white-space: nowrap;
+        text-align: right;
+      }
+
+      .delete-btn {
+        color: #ddd;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+      }
+
+      .delete-btn:hover {
+        color: #ff5252;
+        transform: scale(1.2);
+      }
+
       .toast-notification {
         position: fixed;
         bottom: 30px;
@@ -223,50 +261,11 @@
         transform: translateX(-50%) translateY(0);
         opacity: 1;
       }
-
-      /* Alineación Prolija del Historial */
-      .mov-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center; /* Alinea verticalmente al centro */
-        padding: 15px;
-        border-bottom: 1px solid var(--main-pink);
-        background: white;
-        border-radius: 12px;
-        margin-bottom: 8px;
-      }
-
-      .mov-info {
-        flex: 1; /* Toma todo el espacio disponible a la izquierda */
-        padding-right: 10px;
-      }
-
-      .mov-monto-actions {
-        display: flex;
-        align-items: center;
-        gap: 15px; /* Espacio entre el monto y el tachito */
-        white-space: nowrap; /* Evita que el monto se rompa en dos líneas */
-      }
-
-      /* Estilo del Tachito */
-      .delete-btn {
-        color: #ddd;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 1.1rem;
-      }
-
-      .delete-btn:hover {
-        color: #ff5252;
-        transform: scale(1.2);
-      }
     </style>
   </head>
   <body>
     <div class="container-content">
-      <div class="header">
-        <h1>Gastos</h1>
-      </div>
+      <div class="header"></div>
 
       <div class="tab-nav">
         <button id="t1" class="active" onclick="verTab(1)">
@@ -345,20 +344,16 @@
             <option value="Casa">Casa</option>
           </select>
 
-          <div class="row g-2">
-            <div class="col-12">
-              <label class="label-form">Categoría</label>
-              <select
-                name="categoria"
-                id="selectCategoria"
-                class="form-select"
-                required
-                onchange="checkMercaderia(this.value)"
-              >
-                <option value="">Seleccionar...</option>
-              </select>
-            </div>
-          </div>
+          <label class="label-form">Categoría</label>
+          <select
+            name="categoria"
+            id="selectCategoria"
+            class="form-select"
+            required
+            onchange="checkMercaderia(this.value)"
+          >
+            <option value="">Seleccionar...</option>
+          </select>
 
           <label class="label-form">Método</label>
           <select name="metodo" id="metodoInput" class="form-select" required>
@@ -393,12 +388,64 @@
 
       <div id="cont3" style="display: none">
         <div class="card-custom">
-          <label class="label-form">Mes</label>
+          <h3
+            style="
+              font-weight: 800;
+              color: var(--accent-pink);
+              margin-bottom: 15px;
+            "
+          >
+            <i class="fas fa-chart-pie"></i> Reportes
+          </h3>
+          <label class="label-form">Seleccionar Mes</label>
           <select
             id="selectMes"
-            class="form-select"
+            class="form-select mb-3"
             onchange="generarReporte()"
           ></select>
+
+          <div class="row g-2 mb-4 text-center">
+            <div class="col-4">
+              <div class="p-2 bg-light rounded shadow-sm">
+                <div
+                  style="font-size: 0.65rem"
+                  class="text-uppercase fw-bold opacity-50"
+                >
+                  Ingresos
+                </div>
+                <div id="totalIngresos" class="fw-bold text-success small">
+                  $0,00
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="p-2 bg-light rounded shadow-sm">
+                <div
+                  style="font-size: 0.65rem"
+                  class="text-uppercase fw-bold opacity-50"
+                >
+                  Gastos
+                </div>
+                <div id="totalGastos" class="fw-bold text-danger small">
+                  $0,00
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="p-2 bg-light rounded shadow-sm">
+                <div
+                  style="font-size: 0.65rem"
+                  class="text-uppercase fw-bold opacity-50"
+                >
+                  Balance
+                </div>
+                <div id="totalBalance" class="fw-bold text-primary small">
+                  $0,00
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr />
           <div id="reporteContenido"></div>
         </div>
       </div>
@@ -451,7 +498,6 @@
     </div>
 
     <script>
-      // ==================== CONFIGURACIÓN ====================
       const scriptURL =
         "https://script.google.com/macros/s/AKfycbwumB9JvAsiiLpEvTNzgdQNMBAmWLNOcEs00w_rdjaF2f-zhPhhh7zZF8LEf3B2qEcrdA/exec";
 
@@ -469,15 +515,13 @@
       };
 
       let db = { movimientos: [] };
-      let filtroSeccionActual = "TODO";
       const fmt = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 2 });
 
-      // ==================== INICIALIZACIÓN ====================
       window.addEventListener("load", () => {
         setFechaHoy();
         actualizarCategorias();
         llenarMeses();
-        cargarDatos(); // Trae los datos de Google Sheets
+        cargarDatos();
       });
 
       function setFechaHoy() {
@@ -496,7 +540,6 @@
             .join("");
       }
 
-      // ==================== CARGA Y RENDER (HISTORIAL) ====================
       async function cargarDatos() {
         try {
           const r = await fetch(`${scriptURL}?t=${Date.now()}`);
@@ -505,7 +548,6 @@
           if (document.getElementById("cont3").style.display === "block")
             generarReporte();
         } catch (e) {
-          console.error("Error al cargar:", e);
           mostrarNotificacion(
             "Error al conectar con la base de datos",
             "error",
@@ -516,11 +558,10 @@
       function renderHistorial() {
         const contenedor = document.getElementById("listaHistorial");
         if (!db.movimientos || db.movimientos.length === 0) {
-          contenedor.innerHTML = `<div class="text-center p-5 opacity-50"><i class="fas fa-folder-open fa-3x"></i><p>Sin datos</p></div>`;
+          contenedor.innerHTML = `<div class="text-center p-5 opacity-50"><p>Sin datos</p></div>`;
           return;
         }
 
-        // Ordenar por fecha (más reciente primero)
         const ordenados = [...db.movimientos].sort(
           (a, b) => new Date(b.fecha) - new Date(a.fecha),
         );
@@ -529,8 +570,6 @@
           .map((m) => {
             const esIngreso = m.tipo === "Ingreso";
             const montoNum = parseFloat(m.monto);
-
-            // Escapamos el concepto por si tiene comillas
             const conceptoEscapado = m.concepto.replace(/'/g, "\\'");
 
             return `
@@ -542,25 +581,41 @@
                     </div>
                 </div>
                 <div class="mov-monto-actions">
-                    <span class="${esIngreso ? "monto-entrada" : "monto-salida"}" style="font-weight:800; font-size:1.05rem;">
+                    <span class="${esIngreso ? "text-success" : "text-danger"}" style="font-weight:800; font-size:1rem;">
                         ${esIngreso ? "+" : "-"}$${fmt.format(montoNum)}
                     </span>
-                    <i class="fas fa-trash-alt delete-btn" 
-                       onclick="eliminarMovimiento('${m.fecha}', '${conceptoEscapado}', '${m.seccion}')">
-                    </i>
+                    <i class="fas fa-trash-alt delete-btn" onclick="eliminarMovimiento('${m.fecha}', '${conceptoEscapado}', '${m.seccion}')"></i>
                 </div>
             </div>`;
           })
           .join("");
       }
 
-      // ==================== REPORTES Y ANÁLISIS ====================
+      async function eliminarMovimiento(fecha, concepto, seccion) {
+        if (!confirm(`¿Eliminar "${concepto}"?`)) return;
+        mostrarNotificacion("Eliminando...", "info");
+        const fd = new FormData();
+        fd.append("action", "eliminar_movimiento");
+        fd.append("fecha", fecha);
+        fd.append("concepto", concepto);
+        fd.append("seccion", seccion);
+        try {
+          const resp = await fetch(scriptURL, { method: "POST", body: fd });
+          const res = await resp.json();
+          if (res.success) {
+            await cargarDatos();
+            mostrarNotificacion("Eliminado correctamente");
+          }
+        } catch (e) {
+          mostrarNotificacion("Error al eliminar", "error");
+        }
+      }
+
       function generarReporte() {
         const mes = parseInt(document.getElementById("selectMes").value);
         const movsMes = db.movimientos.filter(
           (m) => new Date(m.fecha + "T12:00:00").getMonth() === mes,
         );
-
         let ing = 0,
           gas = 0;
         const porSec = {};
@@ -575,10 +630,6 @@
           porSec[m.seccion].items.push(m);
         });
 
-        // Actualizar cajas de texto
-        const statsRow = document.getElementById("statsRow");
-        if (statsRow) statsRow.style.display = "grid";
-
         document.getElementById("totalIngresos").innerText =
           "$" + fmt.format(ing);
         document.getElementById("totalGastos").innerText =
@@ -586,34 +637,28 @@
         document.getElementById("totalBalance").innerText =
           "$" + fmt.format(ing - gas);
 
-        // Renderizado de lista por sección
         let html = "";
         for (const [sec, data] of Object.entries(porSec)) {
-          html += `
-            <div class="mb-4 border-start border-4 border-info ps-3">
-                <div class="fw-bold text-uppercase small">${sec}</div>
-                <div class="text-muted small mb-2">Ingresos: $${fmt.format(data.ing)} | Gastos: $${fmt.format(data.gas)}</div>
-                ${data.items
-                  .map(
-                    (i) => `
-                    <div class="d-flex justify-content-between small border-bottom py-1">
-                        <span>${i.concepto}</span>
-                        <span class="${i.tipo === "Ingreso" ? "text-success" : "text-danger"}">$${fmt.format(parseFloat(i.monto))}</span>
-                    </div>
-                `,
-                  )
-                  .join("")}
-            </div>`;
+          html += `<div class="mb-3 border-start border-4 border-info ps-2">
+            <div class="fw-bold small text-uppercase">${sec}</div>
+            ${data.items
+              .map(
+                (i) => `
+              <div class="d-flex justify-content-between small border-bottom py-1">
+                <span>${i.concepto}</span>
+                <span class="${i.tipo === "Ingreso" ? "text-success" : "text-danger"}">$${fmt.format(parseFloat(i.monto))}</span>
+              </div>`,
+              )
+              .join("")}
+          </div>`;
         }
         document.getElementById("reporteContenido").innerHTML =
-          html || "<p class='text-center opacity-50'>No hay datos este mes</p>";
+          html || "<p class='text-center opacity-50'>No hay datos</p>";
       }
 
-      // ==================== LÓGICA DEL MODAL ====================
       function checkMercaderia(val) {
-        if (val === "Mercaderia") {
+        if (val === "Mercaderia")
           document.getElementById("modalMercaderia").classList.add("activo");
-        }
       }
 
       function cerrarModal() {
@@ -625,17 +670,15 @@
         const selected = Array.from(
           document.querySelectorAll("#modalMercaderia input:checked"),
         ).map((cb) => cb.value);
-        if (selected.length > 0) {
+        if (selected.length > 0)
           document.getElementById("conceptoInput").value =
             "Mercadería: " + selected.join(", ");
-        }
         document.getElementById("modalMercaderia").classList.remove("activo");
         document
           .querySelectorAll("#modalMercaderia input")
           .forEach((cb) => (cb.checked = false));
       }
 
-      // ==================== NAVEGACIÓN Y GUARDADO ====================
       function verTab(n) {
         [1, 2, 3].forEach((i) => {
           document.getElementById("cont" + i).style.display =
@@ -651,10 +694,8 @@
         const btn = document.getElementById("btnGuardar");
         btn.disabled = true;
         btn.innerHTML = "Guardando...";
-
         const fd = new FormData(e.target);
         fd.append("action", "agregar_movimiento");
-
         try {
           const resp = await fetch(scriptURL, { method: "POST", body: fd });
           const res = await resp.json();
@@ -663,11 +704,11 @@
             setFechaHoy();
             actualizarCategorias();
             await cargarDatos();
-            mostrarNotificacion("¡Movimiento guardado!");
+            mostrarNotificacion("¡Guardado!");
             verTab(2);
           }
         } catch (err) {
-          mostrarNotificacion("Error al guardar", "error");
+          mostrarNotificacion("Error", "error");
         } finally {
           btn.disabled = false;
           btn.innerHTML = '<i class="fas fa-save"></i> Guardar Movimiento';
@@ -689,9 +730,8 @@
           "Noviembre",
           "Diciembre",
         ];
-        const select = document.getElementById("selectMes");
         const mesActual = new Date().getMonth();
-        select.innerHTML = meses
+        document.getElementById("selectMes").innerHTML = meses
           .map(
             (m, i) =>
               `<option value="${i}" ${i === mesActual ? "selected" : ""}>${m}</option>`,
@@ -706,7 +746,6 @@
         setTimeout(() => toast.classList.remove("show"), 3000);
       }
 
-      // Máscara de moneda
       document.addEventListener("input", (e) => {
         if (e.target.classList.contains("montoMask")) {
           let v = e.target.value.replace(/\D/g, "");
